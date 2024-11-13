@@ -1,0 +1,222 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: blog-content
+data:
+  index.html: |
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <title>Tech Blog</title>
+      <style>
+        body { font-family: Arial, sans-serif; margin: 40px; }
+        h1 { color: #333; }
+        .nav { margin-bottom: 20px; }
+        .nav a { margin-right: 15px; }
+      </style>
+    </head>
+    <body>
+      <h1>Welcome to Tech Blog</h1>
+      <div class="nav">
+        <a href="/docker.html">Docker Guide</a>
+        <a href="/kubernetes.html">Kubernetes Basics</a>
+        <a href="/about.html">About</a>
+      </div>
+      <p>Welcome to our technical blog where we share insights about containerization and cloud native technologies.</p>
+    </body>
+    </html>
+
+  docker.html: |
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <title>Docker Guide - Tech Blog</title>
+      <style>
+        body { font-family: Arial, sans-serif; margin: 40px; }
+        h1 { color: #333; }
+        pre { background: #f4f4f4; padding: 10px; }
+      </style>
+    </head>
+    <body>
+      <h1>Docker Quick Guide</h1>
+      <h2>Basic Commands:</h2>
+      <pre>
+      # Run a container
+      docker run nginx
+      
+      # List containers
+      docker ps
+      
+      # Build an image
+      docker build -t myapp .
+      </pre>
+      <p><a href="/">Back to Home</a></p>
+    </body>
+    </html>
+
+  kubernetes.html: |
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <title>Kubernetes Basics - Tech Blog</title>
+      <style>
+        body { font-family: Arial, sans-serif; margin: 40px; }
+        h1 { color: #333; }
+        pre { background: #f4f4f4; padding: 10px; }
+      </style>
+    </head>
+    <body>
+      <h1>Kubernetes Basics</h1>
+      <h2>Essential Commands:</h2>
+      <pre>
+      # Get all pods
+      kubectl get pods
+      
+      # Create deployment
+      kubectl create deployment nginx --image=nginx
+      
+      # Scale deployment
+      kubectl scale deployment nginx --replicas=3
+      </pre>
+      <p><a href="/">Back to Home</a></p>
+    </body>
+    </html>
+
+  about.html: |
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <title>About - Tech Blog</title>
+      <style>
+        body { font-family: Arial, sans-serif; margin: 40px; }
+        h1 { color: #333; }
+      </style>
+    </head>
+    <body>
+      <h1>About Us</h1>
+      <p>We are a team of DevOps engineers sharing our knowledge and experiences.</p>
+      <p>Follow us for more content about:</p>
+      <ul>
+        <li>Container Orchestration</li>
+        <li>Cloud Native Applications</li>
+        <li>DevOps Best Practices</li>
+        <li>Infrastructure as Code</li>
+      </ul>
+      <p><a href="/">Back to Home</a></p>
+    </body>
+    </html>
+
+  404.html: |
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <title>404 - Page Not Found</title>
+      <style>
+        body { font-family: Arial, sans-serif; margin: 40px; text-align: center; }
+        h1 { color: #ff4444; }
+      </style>
+    </head>
+    <body>
+      <h1>404 - Page Not Found</h1>
+      <p>Sorry, the page you're looking for doesn't exist.</p>
+      <p><a href="/">Return to Homepage</a></p>
+    </body>
+    </html>
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: blog-nginx-conf
+data:
+  nginx.conf: |
+    user  nginx;
+    worker_processes  1;
+    error_log  /var/log/nginx/error.log warn;
+    pid        /var/run/nginx.pid;
+    events {
+        worker_connections  1024;
+    }
+    http {
+        types {
+            text/html                                        html htm shtml;
+            text/css                                         css;
+            text/xml                                         xml;
+            image/gif                                        gif;
+            image/jpeg                                       jpeg jpg;
+            application/javascript                           js;
+            application/atom+xml                             atom;
+            application/rss+xml                              rss;
+            text/plain                                       txt;
+        }
+        default_type  application/octet-stream;
+        sendfile        on;
+        keepalive_timeout  65;
+        server {
+            listen       80;
+            server_name  localhost;
+            
+            location / {
+                root   /usr/share/nginx/html;
+                index  index.html;
+                try_files $uri $uri/ /index.html;
+            }
+            
+            error_page 404 /404.html;
+            location = /404.html {
+                root /usr/share/nginx/html;
+                internal;
+            }
+            
+            error_page   500 502 503 504  /50x.html;
+            location = /50x.html {
+                root   /usr/share/nginx/html;
+            }
+        }
+    }
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tech-blog
+  labels:
+    app: tech-blog
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: tech-blog
+  template:
+    metadata:
+      labels:
+        app: tech-blog
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:1.14.2
+        ports:
+        - containerPort: 80
+        volumeMounts:
+        - name: content
+          mountPath: "/usr/share/nginx/html/"
+        - name: config
+          mountPath: "/etc/nginx/nginx.conf"
+          subPath: nginx.conf
+      volumes:
+      - name: content
+        configMap:
+          name: blog-content
+      - name: config
+        configMap:
+          name: blog-nginx-conf
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: tech-blog
+spec:
+  selector:
+    app: tech-blog
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
