@@ -18,9 +18,9 @@ data:
     <body>
       <h1>Welcome to Tech Blog</h1>
       <div class="nav">
-        <a href="/docker.html">Docker Guide</a>
-        <a href="/kubernetes.html">Kubernetes Basics</a>
-        <a href="/about.html">About</a>
+        <a href="docker.html">Docker Guide</a>
+        <a href="kubernetes.html">Kubernetes Basics</a>
+        <a href="about.html">About</a>
       </div>
       <p>Welcome to our technical blog where we share insights about containerization and cloud native technologies.</p>
     </body>
@@ -50,7 +50,7 @@ data:
       # Build an image
       docker build -t myapp .
       </pre>
-      <p><a href="/">Back to Home</a></p>
+      <p><a href="./">Back to Home</a></p>
     </body>
     </html>
 
@@ -78,7 +78,7 @@ data:
       # Scale deployment
       kubectl scale deployment nginx --replicas=3
       </pre>
-      <p><a href="/">Back to Home</a></p>
+      <p><a href="./">Back to Home</a></p>
     </body>
     </html>
 
@@ -102,7 +102,7 @@ data:
         <li>DevOps Best Practices</li>
         <li>Infrastructure as Code</li>
       </ul>
-      <p><a href="/">Back to Home</a></p>
+      <p><a href="./">Back to Home</a></p>
     </body>
     </html>
 
@@ -119,7 +119,7 @@ data:
     <body>
       <h1>404 - Page Not Found</h1>
       <p>Sorry, the page you're looking for doesn't exist.</p>
-      <p><a href="/">Return to Homepage</a></p>
+      <p><a href="./">Return to Homepage</a></p>
     </body>
     </html>
 ---
@@ -154,6 +154,10 @@ data:
         server {
             listen       80;
             server_name  localhost;
+            
+            # Add base href to all HTML files
+            sub_filter '<head>' '<head><base href="/blog/">';
+            sub_filter_once on;
             
             location / {
                 root   /usr/share/nginx/html;
