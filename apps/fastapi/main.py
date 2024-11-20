@@ -1,5 +1,6 @@
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
+from fastapi.middleware.cors import CORSMiddleware
 from typing import Optional
 
 # Initialize FastAPI app
@@ -8,6 +9,15 @@ app = FastAPI(
     description="A basic FastAPI application with two routes",
     version="1.0.0",
     root_path="/fastapi"
+)
+
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:3000"],  # Add your frontend URL here
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 # Data model for a simple item

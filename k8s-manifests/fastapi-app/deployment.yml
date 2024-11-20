@@ -16,6 +16,6 @@ spec:
     spec:
       containers:
       - name: fastapi
-        image: poridhi/fastapi:v4.1
+        image: poridhi/fastapi:v4.2
         ports:
         - containerPort: 8000
