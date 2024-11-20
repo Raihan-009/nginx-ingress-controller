@@ -6,7 +6,8 @@ from typing import Optional
 app = FastAPI(
     title="Simple API",
     description="A basic FastAPI application with two routes",
-    version="1.0.0"
+    version="1.0.0",
+    root_path="/fastapi"
 )
 
 # Data model for a simple item
