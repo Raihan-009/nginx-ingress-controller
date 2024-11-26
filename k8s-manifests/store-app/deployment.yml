@@ -1,22 +1,24 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: frontend-deployment
+  name: store-frontend-deployment
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: frontend
+      app: store-frontend
   template:
     metadata:
       labels:
-        app: frontend
+        app: store-frontend
     spec:
       containers:
-      - name: frontend
-        image: your-frontend-image:latest # Replace with your image
+      - name: store-frontend
+        image: poridhi/store-app:v2.4
         ports:
         - containerPort: 3000
         env:
+        - name: NODE_ENV
+          value: "production"
         - name: NEXT_PUBLIC_BACKEND_URL
           value: "https://ryuzaki.me/fastapi"
